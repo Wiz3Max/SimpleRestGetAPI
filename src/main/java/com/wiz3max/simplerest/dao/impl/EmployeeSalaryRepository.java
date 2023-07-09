@@ -1,6 +1,7 @@
 package com.wiz3max.simplerest.dao.impl;
 
 import com.wiz3max.simplerest.dao.EmployeeSalaryDao;
+import com.wiz3max.simplerest.dao.FileCache;
 import com.wiz3max.simplerest.file.reader.CsvFileReader;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Repository;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -20,41 +22,18 @@ import static com.wiz3max.simplerest.constant.AppConstant.INITIAL_FILE_DATA_CAPA
 public class EmployeeSalaryRepository implements EmployeeSalaryDao {
 
     @Autowired
-    private CacheManager cacheManager;
+    private FileCache fileCache;
 
-    @Autowired
-    private CsvFileReader employeeSalaryCsvFileReader;
-
-    @PostConstruct
-    public void initCache() throws IOException {
-        loadStaticFileToCache();
-    }
-
-    //TODO: need to test cache not effect from manipulate after get data
     @Override
-    @Cacheable(cacheNames = "employeeSalary")
     public List<Map<String, Object>> queryEmployeeSalary(){
-        return readEmployeeSalary();
-    }
-
-    private List<Map<String, Object>> loadDatafromCsv() {
-        return employeeSalaryCsvFileReader.parseFile();
-    }
-
-//    private List<Map<String, Object>> loadDataFromJson(){
-//        return null;
-//    }
-
-    private void loadStaticFileToCache() throws IOException {
-        cacheManager.getCache("employeeSalary").put(SimpleKey.EMPTY, readEmployeeSalary());
-    }
-
-    private List<Map<String, Object>> readEmployeeSalary() {
-        List<Map<String, Object>> data = new ArrayList<>(INITIAL_FILE_DATA_CAPACITY);
-        data.addAll(loadDatafromCsv());
-        //TODO: implement
-//        data.addAll(loadDataFromJson());
-        return data;
+        List<Map<String, Object>> cacheData = fileCache.readEmployeeSalary();
+        List<Map<String, Object>> copyData = new ArrayList<>(cacheData.size());
+        for (Map<String, Object> row: cacheData) {
+            Map<String, Object> copyRow = new LinkedHashMap<>();
+            copyRow.putAll(row);
+            copyData.add(copyRow);
+        }
+        return copyData;
     }
 
 }
