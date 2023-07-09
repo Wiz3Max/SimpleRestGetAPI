@@ -20,6 +20,10 @@ public interface RowSorter<T extends List<? extends Map<? extends String, ?>>, K
         public int getVectorValue(){
             return this.vectorValue;
         }
+
+        public static SortDirection valueOfIgnoreCase(String sortDirectionStr) {
+            return SortDirection.valueOf(sortDirectionStr.toUpperCase());
+        }
     }
 
     T sort(T input, K sortByFields, SortDirection sortDirection, Map<String, Metadata> metadataMap);

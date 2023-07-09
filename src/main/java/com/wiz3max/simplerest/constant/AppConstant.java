@@ -6,7 +6,7 @@ public interface AppConstant {
 
     String FIELDS_REQ_PARAMETER_KEY = "fields";
     String SORT_REQ_PARAMETER_KEY = "sort";
-    String SORT_TYPE_REQ_PARAMETER_KEY = "sort_TYPE";
+    String SORT_TYPE_REQ_PARAMETER_KEY = "sort_type";
 
     String FIELD_CRITERIA_OPERATOR_OPEN_BRACKET = "[";
     String FIELD_CRITERIA_OPERATOR_CLOSE_BRACKET = "]";

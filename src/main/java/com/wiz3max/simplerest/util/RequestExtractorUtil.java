@@ -41,7 +41,7 @@ public class RequestExtractorUtil {
 
         RowSorter.SortDirection sortDirection;
         try{
-            sortDirection = RowSorter.SortDirection.valueOf(sortDirectionStr);
+            sortDirection = RowSorter.SortDirection.valueOfIgnoreCase(sortDirectionStr);
         } catch (IllegalArgumentException e){
             throw new InvalidRequestException("Invalid sort_type : " + sortDirectionStr, ErrorCode.INVALID_SORT_TYPE, e);
         }

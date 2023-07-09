@@ -70,6 +70,7 @@ public class SimpleController {
         log.info(requestParameters.keySet());
 
         //TODO: validate allow field to filter row by criteria  => job title, salary, gender
+        //TODO: validate sort field must be in fields
         EmployeeSalaryRequest request = new EmployeeSalaryRequest();
         request.setFilterColumn(requestExtractorUtil.extractAndValidateReservedRequestParameter(FIELDS_REQ_PARAMETER_KEY, requestParameters));
         request.setSortField(requestExtractorUtil.extractAndValidateReservedRequestParameter(SORT_REQ_PARAMETER_KEY, requestParameters));
