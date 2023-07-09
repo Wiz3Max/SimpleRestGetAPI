@@ -1,6 +1,5 @@
-package com.wiz3max.simplerest.dao.impl;
+package com.wiz3max.simplerest.cache;
 
-import com.wiz3max.simplerest.dao.FileCache;
 import com.wiz3max.simplerest.file.reader.CsvFileReader;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;

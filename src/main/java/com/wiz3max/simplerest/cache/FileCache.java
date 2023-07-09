@@ -1,4 +1,4 @@
-package com.wiz3max.simplerest.dao;
+package com.wiz3max.simplerest.cache;
 
 import java.util.List;
 import java.util.Map;
