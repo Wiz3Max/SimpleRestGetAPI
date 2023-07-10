@@ -5,8 +5,6 @@ import com.wiz3max.simplerest.metadata.MetadataProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import static com.wiz3max.simplerest.exception.ErrorCode.INVALID_FIELD_NAME;

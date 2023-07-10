@@ -1,7 +1,7 @@
 package com.wiz3max.simplerest.dao.impl;
 
-import com.wiz3max.simplerest.dao.EmployeeSalaryDao;
 import com.wiz3max.simplerest.cache.FileCache;
+import com.wiz3max.simplerest.dao.EmployeeSalaryDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 

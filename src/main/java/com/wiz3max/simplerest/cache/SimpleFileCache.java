@@ -12,7 +12,6 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import static com.wiz3max.simplerest.constant.AppConstant.INITIAL_FILE_DATA_CAPACITY;

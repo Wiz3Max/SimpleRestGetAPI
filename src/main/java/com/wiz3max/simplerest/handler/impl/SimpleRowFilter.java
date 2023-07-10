@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import static com.wiz3max.simplerest.metadata.impl.MetadataProviderImpl.SchemaType.CSV;
 import static com.wiz3max.simplerest.metadata.impl.MetadataProviderImpl.SchemaType.REQ;
 
 @Component
