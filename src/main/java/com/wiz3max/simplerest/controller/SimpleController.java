@@ -4,6 +4,7 @@ import com.wiz3max.simplerest.controller.model.request.EmployeeSalaryRequest;
 import com.wiz3max.simplerest.controller.model.response.EmployeeSalaryResponse;
 import com.wiz3max.simplerest.service.EmployeeSalaryService;
 import com.wiz3max.simplerest.util.RequestExtractorUtil;
+import com.wiz3max.simplerest.util.RequestValidatorUtil;
 import lombok.extern.apachecommons.CommonsLog;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -28,6 +29,9 @@ public class SimpleController {
     @Autowired
     private RequestExtractorUtil requestExtractorUtil;
 
+    @Autowired
+    private RequestValidatorUtil requestValidatorUtil;
+
     /**
      * /job_data?requestParam1=xxxx
      * requestParameter:
@@ -49,6 +53,7 @@ public class SimpleController {
      *      /job_data?salary=10000  #filter row that salary equal 10000
      *      /job_data?salary[gte]=10000  #filter row that salary greater than or equal 10000
      *      /job_data?salary=10000&&sort=name,salary&&sort_type=DESC
+     *      /job_data?Timestamp[gte]=2011-12-03T10:15:30
      *
      * --- response body ---
      * {
@@ -71,13 +76,13 @@ public class SimpleController {
         log.debug(requestParameters.entrySet());
 
         //TODO: improve value format response to comma-separated to reduce payload size
-        //TODO: validate allow field to filter row by criteria  => job title, salary, gender
-        //TODO: validate sort field must be in fields
         EmployeeSalaryRequest request = new EmployeeSalaryRequest();
         request.setFilterColumn(requestExtractorUtil.extractAndValidateReservedRequestParameter(FIELDS_REQ_PARAMETER_KEY, requestParameters));
         request.setSortField(requestExtractorUtil.extractAndValidateReservedRequestParameter(SORT_REQ_PARAMETER_KEY, requestParameters));
+        requestValidatorUtil.validateFieldNamesMustBeSubsetInList(request.getSortField(), request.getFilterColumn(), FIELDS_REQ_PARAMETER_KEY);
         request.setSortMode(requestExtractorUtil.valueOfSortDirection(requestParameters.get(SORT_TYPE_REQ_PARAMETER_KEY)));
         request.setFilterRowCriterias(requestExtractorUtil.extractAndValidateFieldCriteria(requestParameters));
+
 
         EmployeeSalaryResponse employeeSalaryResponse = new EmployeeSalaryResponse();
         //delegate to service

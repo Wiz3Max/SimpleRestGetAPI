@@ -2,6 +2,7 @@ package com.wiz3max.simplerest.metadata;
 
 import java.time.format.DateTimeFormatter;
 import java.time.format.ResolverStyle;
+import java.util.Locale;
 
 public class Metadata {
 
@@ -18,8 +19,8 @@ public class Metadata {
         this.type = type;
         this.datePattern = datePattern;
         this.dateTimeFormatter = DateTimeFormatter
-                .ofPattern(this.datePattern != null ? this.datePattern : DEFAULT_TIMESTAMP_PATTERN)
-                .withResolverStyle(ResolverStyle.SMART);
+                .ofPattern(this.datePattern != null ? this.datePattern : DEFAULT_TIMESTAMP_PATTERN, Locale.ROOT)
+                .withResolverStyle(ResolverStyle.STRICT);
     }
 
     public String getSourceField() {

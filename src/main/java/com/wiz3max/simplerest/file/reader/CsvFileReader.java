@@ -4,6 +4,7 @@ import com.wiz3max.simplerest.exception.ErrorCode;
 import com.wiz3max.simplerest.exception.FileException;
 import com.wiz3max.simplerest.exception.IllegalFileFormatException;
 import com.wiz3max.simplerest.metadata.Metadata;
+import com.wiz3max.simplerest.metadata.impl.MetadataProviderImpl;
 import com.wiz3max.simplerest.util.RequestExtractorUtil;
 import de.siegmar.fastcsv.reader.NamedCsvReader;
 import de.siegmar.fastcsv.reader.NamedCsvRow;
@@ -43,6 +44,8 @@ public class CsvFileReader implements DataReader {
 
     @Override
     public List<Map<String, Object>> parseFile() {
+        log.info("Start reading csv file");
+
         try (NamedCsvReader csv = NamedCsvReader.builder()
                 .fieldSeparator(this.fieldSeparator)
                 .quoteCharacter(this.quoteCharacter)
@@ -81,10 +84,10 @@ public class CsvFileReader implements DataReader {
             }
 
             try{
-                Object parsedValue = requestExtractorUtil.parseValue(columnName, value);
+                Object parsedValue = requestExtractorUtil.parseValue(columnName, value, MetadataProviderImpl.SchemaType.CSV);
                 parsedRowMap.put(columnName, parsedValue);
             } catch (Throwable e){
-                log.warn("Skip row due to parsed error Line: " + rawRowMap.get(TIMESTAMP_FIELD_NAME) + " ,column " + columnName + " : " + value);
+                log.warn("Skip row due to parsed error Line: " + rawRowMap.get(TIMESTAMP_FIELD_NAME) + " ,column " + columnName + " : " + value, e);
                 return null;
             }
         }

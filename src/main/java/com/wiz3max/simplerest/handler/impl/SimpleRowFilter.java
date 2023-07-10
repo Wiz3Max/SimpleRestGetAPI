@@ -14,6 +14,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import static com.wiz3max.simplerest.metadata.impl.MetadataProviderImpl.SchemaType.CSV;
+import static com.wiz3max.simplerest.metadata.impl.MetadataProviderImpl.SchemaType.REQ;
+
 @Component
 public class SimpleRowFilter implements RowFilter<List<Map<String, Object>>> {
 
@@ -37,7 +40,7 @@ public class SimpleRowFilter implements RowFilter<List<Map<String, Object>>> {
                     continue ROW_LOOP;
                 }
 
-                switch (metadataProvider.getMetadata().get(fieldName).getType()){
+                switch (metadataProvider.getMetadata(REQ).get(fieldName).getType()){
                     case TIMESTAMP -> {
                         LocalDateTime firstOperand = (LocalDateTime) row.get(fieldName);
                         if(!criteria.getOperator().getOperatorFunction().test(firstOperand, criteria.getSecondOperand())){

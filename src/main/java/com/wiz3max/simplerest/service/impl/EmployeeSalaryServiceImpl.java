@@ -13,6 +13,9 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Map;
 
+import static com.wiz3max.simplerest.metadata.impl.MetadataProviderImpl.SchemaType.CSV;
+import static com.wiz3max.simplerest.metadata.impl.MetadataProviderImpl.SchemaType.REQ;
+
 @Service
 public class EmployeeSalaryServiceImpl implements EmployeeSalaryService {
 
@@ -43,7 +46,7 @@ public class EmployeeSalaryServiceImpl implements EmployeeSalaryService {
         employeeSalaryMaps = fieldFilter.filter(employeeSalaryMaps, request.getFilterColumn());
 
         //sort by field
-        rowSorter.sort(employeeSalaryMaps, request.getSortField(), request.getSortMode(), metadataProvider.getMetadata());
+        rowSorter.sort(employeeSalaryMaps, request.getSortField(), request.getSortMode(), metadataProvider.getMetadata(REQ));
 
         return employeeSalaryMaps;
     }

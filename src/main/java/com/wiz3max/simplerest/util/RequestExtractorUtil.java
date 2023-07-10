@@ -4,11 +4,13 @@ import com.wiz3max.simplerest.constant.ReqParameterOperator;
 import com.wiz3max.simplerest.dto.FieldCriteria;
 import com.wiz3max.simplerest.exception.ErrorCode;
 import com.wiz3max.simplerest.exception.IllegalFileFormatException;
+import com.wiz3max.simplerest.exception.InternalErrorException;
 import com.wiz3max.simplerest.exception.InvalidRequestException;
 import com.wiz3max.simplerest.handler.RowSorter;
 import com.wiz3max.simplerest.metadata.Metadata;
 import com.wiz3max.simplerest.metadata.MetadataProvider;
 import com.wiz3max.simplerest.constant.AppConstant;
+import com.wiz3max.simplerest.metadata.impl.MetadataProviderImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -16,14 +18,11 @@ import org.springframework.util.StringUtils;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.ResolverStyle;
+import java.time.format.DateTimeParseException;
 import java.util.*;
 
 @Component
 public class RequestExtractorUtil {
-
-    public static final DateTimeFormatter DEFAULT_DATETIME_FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE_TIME.withResolverStyle(ResolverStyle.STRICT);;
 
     @Autowired
     private MetadataProvider metadataProvider;
@@ -96,7 +95,7 @@ public class RequestExtractorUtil {
             operatorStr = requestParameterCriteriaKey.substring(bracketStartIndex+1, bracketEndIndex);
         }
 
-        requestValidatorUtil.validateFieldName(criteriaField, requestParameterCriteriaKey);
+        requestValidatorUtil.validateFieldNameWithMetadata(criteriaField, requestParameterCriteriaKey);
         ReqParameterOperator operator;
         try{
             operator = ReqParameterOperator.valueOf(operatorStr);
@@ -104,7 +103,7 @@ public class RequestExtractorUtil {
             throw new InvalidRequestException("Criteria [" + operatorStr + "] of field " + criteriaField + " doesn't support", ErrorCode.INVALID_CRITERIA_OPERATOR, e);
         }
 
-        Object parsedValue = this.parseValue(criteriaField, requestParameterCriteriaValue, DEFAULT_DATETIME_FORMATTER);
+        Object parsedValue = this.parseValue(criteriaField, requestParameterCriteriaValue, MetadataProviderImpl.SchemaType.REQ);
         return new FieldCriteria(criteriaField, operator, parsedValue);
     }
 
@@ -112,30 +111,23 @@ public class RequestExtractorUtil {
         return StringUtils.commaDelimitedListToSet(requestParameterValue).stream().toList();
     }
 
-    /**
-     * parse Value according to metadata provider
-     * @param columnName
-     * @param value
-     * @return
-     */
-    public Object parseValue(String columnName, String value){
-        return parseValue(columnName, value, null);
-    }
-
-    /**
-     * parse Value according to metadata provider with specific DateTimeFormatter for DataType.TIMESTAMP
-     * @param columnName
-     * @param value
-     * @param dateTimeFormatter specific to override dateTimeFormatter of MetadataProvider
-     * @return
-     */
-    public Object parseValue(String columnName, String value, DateTimeFormatter dateTimeFormatter){
+    public Object parseValue(String columnName, String value, MetadataProviderImpl.SchemaType schemaType){
         if(!StringUtils.hasText(value)){
             return null;
         }
-        Metadata columnMetadata = metadataProvider.getMetadata().get(columnName);
+        Map<String, Metadata> metadataMap = metadataProvider.getMetadata(schemaType);
+        if(metadataMap == null){
+            throw new InternalErrorException("Not found metadata type " + schemaType.toString(), ErrorCode.INTERNAL_ERROR);
+        }
+        Metadata columnMetadata = metadataMap.get(columnName);
         return switch (columnMetadata.getType()){
-            case TIMESTAMP -> LocalDateTime.parse(value, dateTimeFormatter == null ? columnMetadata.getDateTimeFormatter() : dateTimeFormatter);
+            case TIMESTAMP -> {
+                try {
+                    yield LocalDateTime.parse(value, columnMetadata.getDateTimeFormatter());
+                } catch (DateTimeParseException e) {
+                    throw new IllegalFileFormatException("Cannot parse datetime " + value + " of field " + columnName, ErrorCode.FILE_ILLEGAL_FORMAT, e);
+                }
+            }
             case DECIMAL -> {
                 try {
                     yield NumberFormat.getNumberInstance(Locale.US).parse(value).doubleValue();
