@@ -18,10 +18,7 @@ import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.ResolverStyle;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 @Component
 public class RequestExtractorUtil {
@@ -68,8 +65,8 @@ public class RequestExtractorUtil {
     }
 
 
-    public Map<String, FieldCriteria> extractAndValidateFieldCriteria(Map<String, String> requestParameter){
-        Map<String, FieldCriteria> fieldCriteriaMap = new HashMap<>();
+    public List<FieldCriteria> extractAndValidateFieldCriteria(Map<String, String> requestParameter){
+        List<FieldCriteria> fieldCriterias = new ArrayList<>();
         for(Map.Entry<String, String> entry : requestParameter.entrySet()){
             String requestParameterKey = entry.getKey();
             String requestParameterValue = entry.getValue();
@@ -79,9 +76,9 @@ public class RequestExtractorUtil {
                 continue;
             }
             FieldCriteria fieldCriteria = parseFieldCriteria(requestParameterKey, requestParameterValue);
-            fieldCriteriaMap.put(fieldCriteria.getFieldName(), fieldCriteria);
+            fieldCriterias.add(fieldCriteria);
         }
-        return fieldCriteriaMap;
+        return fieldCriterias;
     }
 
     public FieldCriteria parseFieldCriteria(String requestParameterCriteriaKey, String requestParameterCriteriaValue){
@@ -104,7 +101,7 @@ public class RequestExtractorUtil {
         try{
             operator = ReqParameterOperator.valueOf(operatorStr);
         } catch (IllegalArgumentException e){
-            throw new InvalidRequestException("Criteria [" + operatorStr + "] of field " + criteriaField + "doesn't support", ErrorCode.INVALID_CRITERIA_OPERATOR, e);
+            throw new InvalidRequestException("Criteria [" + operatorStr + "] of field " + criteriaField + " doesn't support", ErrorCode.INVALID_CRITERIA_OPERATOR, e);
         }
 
         Object parsedValue = this.parseValue(criteriaField, requestParameterCriteriaValue, DEFAULT_DATETIME_FORMATTER);

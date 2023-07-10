@@ -37,7 +37,7 @@ public class EmployeeSalaryServiceImpl implements EmployeeSalaryService {
         List<Map<String, Object>> employeeSalaryMaps = employeeSalaryDao.queryEmployeeSalary();
 
         //filter by condition
-        employeeSalaryMaps = rowFilter.filterRow(employeeSalaryMaps, request.getFilterRowCriteriaMap());
+        employeeSalaryMaps = rowFilter.filterRow(employeeSalaryMaps, request.getFilterRowCriterias());
 
         //filter by column
         employeeSalaryMaps = fieldFilter.filter(employeeSalaryMaps, request.getFilterColumn());

@@ -21,17 +21,16 @@ public class SimpleRowFilter implements RowFilter<List<Map<String, Object>>> {
     private MetadataProvider metadataProvider;
 
     @Override
-    public List<Map<String, Object>> filterRow(List<Map<String, Object>> input, Map<String, FieldCriteria> fieldCriteriaMap) {
-        if (fieldCriteriaMap == null || fieldCriteriaMap.size() <= 0){
+    public List<Map<String, Object>> filterRow(List<Map<String, Object>> input, List<FieldCriteria> fieldCriterias) {
+        if (fieldCriterias == null || fieldCriterias.size() <= 0){
             return input;
         }
 
         ROW_LOOP:
         for (Iterator<Map<String, Object>> it = input.iterator(); it.hasNext(); ){
             Map<String, Object> row = it.next();
-            for (Map.Entry<String, FieldCriteria> criteriaEntry : fieldCriteriaMap.entrySet()){
-                FieldCriteria fieldCriteria = criteriaEntry.getValue();
-                String fieldName = fieldCriteria.getFieldName();
+            for (FieldCriteria criteria : fieldCriterias){
+                String fieldName = criteria.getFieldName();
 
                 if(Objects.isNull(row.get(fieldName))){
                     it.remove();
@@ -41,21 +40,21 @@ public class SimpleRowFilter implements RowFilter<List<Map<String, Object>>> {
                 switch (metadataProvider.getMetadata().get(fieldName).getType()){
                     case TIMESTAMP -> {
                         LocalDateTime firstOperand = (LocalDateTime) row.get(fieldName);
-                        if(!fieldCriteria.getOperator().getOperatorFunction().test(firstOperand, fieldCriteria.getSecondOperand())){
+                        if(!criteria.getOperator().getOperatorFunction().test(firstOperand, criteria.getSecondOperand())){
                             it.remove();
                             continue ROW_LOOP;
                         }
                     }
                     case STRING -> {
                         String firstOperand = (String) row.get(fieldName);
-                        if(!fieldCriteria.getOperator().getOperatorFunction().test(firstOperand, fieldCriteria.getSecondOperand())){
+                        if(!criteria.getOperator().getOperatorFunction().test(firstOperand, criteria.getSecondOperand())){
                             it.remove();
                             continue ROW_LOOP;
                         }
                     }
                     case DECIMAL -> {
                         Double firstOperand = (Double) row.get(fieldName);
-                        if(!fieldCriteria.getOperator().getOperatorFunction().test(firstOperand, fieldCriteria.getSecondOperand())){
+                        if(!criteria.getOperator().getOperatorFunction().test(firstOperand, criteria.getSecondOperand())){
                             it.remove();
                             continue ROW_LOOP;
                         }}

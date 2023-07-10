@@ -55,6 +55,7 @@ public class SimpleController {
      *     errorCode: 000,
      *     errorMsg: "",
      *     header: ["timestamp","salary"],
+     *     number_record: 123,
      *     data: [
      *          {"timestamp":"1", "salary": 123456},
      *          {"timestamp":"2", "salary": 789456}
@@ -67,16 +68,16 @@ public class SimpleController {
      */
     @RequestMapping("/job_data")
     public ResponseEntity<EmployeeSalaryResponse> getEmployeeSalary(@RequestParam Map<String, String> requestParameters){
-        log.info(requestParameters.keySet());
+        log.debug(requestParameters.entrySet());
 
+        //TODO: improve value format response to comma-separated to reduce payload size
         //TODO: validate allow field to filter row by criteria  => job title, salary, gender
         //TODO: validate sort field must be in fields
         EmployeeSalaryRequest request = new EmployeeSalaryRequest();
         request.setFilterColumn(requestExtractorUtil.extractAndValidateReservedRequestParameter(FIELDS_REQ_PARAMETER_KEY, requestParameters));
         request.setSortField(requestExtractorUtil.extractAndValidateReservedRequestParameter(SORT_REQ_PARAMETER_KEY, requestParameters));
         request.setSortMode(requestExtractorUtil.valueOfSortDirection(requestParameters.get(SORT_TYPE_REQ_PARAMETER_KEY)));
-        request.setFilterRowCriteriaMap(requestExtractorUtil.extractAndValidateFieldCriteria(requestParameters));
-
+        request.setFilterRowCriterias(requestExtractorUtil.extractAndValidateFieldCriteria(requestParameters));
 
         EmployeeSalaryResponse employeeSalaryResponse = new EmployeeSalaryResponse();
         //delegate to service
@@ -84,8 +85,7 @@ public class SimpleController {
         employeeSalaryResponse.setData(data);
         employeeSalaryResponse.setNumberRecord(data.size());
 
-        //TODO: implement exception handler
-        return new ResponseEntity(employeeSalaryResponse, HttpStatus.OK);
+        return data == null || data.size() <= 0 ? ResponseEntity.noContent().build() : ResponseEntity.ok(employeeSalaryResponse);
     }
 
 }
