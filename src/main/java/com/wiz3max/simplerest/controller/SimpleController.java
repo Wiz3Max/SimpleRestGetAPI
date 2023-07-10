@@ -74,7 +74,9 @@ public class SimpleController {
     public ResponseEntity<EmployeeSalaryResponse> getEmployeeSalary(@RequestParam Map<String, String> requestParameters){
         log.debug(requestParameters.entrySet());
 
+        //TODO: UNIT TEST
         //TODO: improve value format response to comma-separated to reduce payload size
+        //init request
         EmployeeSalaryRequest request = new EmployeeSalaryRequest();
         request.setFilterColumn(requestExtractorUtil.extractAndValidateReservedRequestParameter(FIELDS_REQ_PARAMETER_KEY, requestParameters));
         request.setSortField(requestExtractorUtil.extractAndValidateReservedRequestParameter(SORT_REQ_PARAMETER_KEY, requestParameters));
