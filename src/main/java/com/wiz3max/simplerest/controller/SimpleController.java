@@ -38,7 +38,7 @@ public class SimpleController {
      *      fields : comma-separated column name to filter data
      *      <field name>[<operator abbr.>] : filter row with field name and condition by operator abbr. If it's not specific[] mean equals(=)
      *      sort : comma-separated column name to sort orderly, the column name in sort parameter need to be subset of column name in fields parameter
-     *      sort_type : sorting direction [ASC, DESC]. It needs to have sort request parameter
+     *      sort_type : sorting direction [ASC, DESC]. ASC is default
      *
      * operator abbr:
      *      lt : less than
@@ -59,7 +59,6 @@ public class SimpleController {
      * {
      *     errorCode: 000,
      *     errorMsg: "",
-     *     header: ["timestamp","salary"],
      *     number_record: 123,
      *     data: [
      *          {"timestamp":"1", "salary": 123456},
