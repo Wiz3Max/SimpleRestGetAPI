@@ -31,44 +31,7 @@ public class SimpleController {
     @Autowired
     private RequestValidatorUtil requestValidatorUtil;
 
-    /**
-     * /job_data?requestParam1=xxxx
-     * requestParameter:
-     *      fields : comma-separated column name to filter data
-     *      <field name>[<operator abbr.>] : filter row with field name and condition by operator abbr. If it's not specific[] mean equals(=)
-     *      sort : comma-separated column name to sort orderly, the column name in sort parameter need to be subset of column name in fields parameter
-     *      sort_type : sorting direction [ASC, DESC]. ASC is default
-     *
-     * operator abbr:
-     *      lt : less than
-     *      lte : less than or equals
-     *      gt : greater than
-     *      gte : greater than or equals
-     *      eq : equals
-     *      ne : not equals
-     *
-     *
-     * example
-     *      /job_data?salary=10000  #filter row that salary equal 10000
-     *      /job_data?salary[gte]=10000  #filter row that salary greater than or equal 10000
-     *      /job_data?salary=10000&&sort=name,salary&&sort_type=DESC
-     *      /job_data?Timestamp[gte]=2011-12-03T10:15:30
-     *
-     * --- response body ---
-     * {
-     *     errorCode: 000,
-     *     errorMsg: "",
-     *     number_record: 123,
-     *     data: [
-     *          {"timestamp":"1", "salary": 123456},
-     *          {"timestamp":"2", "salary": 789456}
-     *     ]
-     * }
-     *
-     *
-     * @param requestParameters
-     * @return
-     */
+
     @RequestMapping("/job_data")
     public ResponseEntity<EmployeeSalaryResponse> getEmployeeSalary(@RequestParam Map<String, String> requestParameters){
         log.debug(requestParameters.entrySet());
