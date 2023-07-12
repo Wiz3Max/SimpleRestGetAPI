@@ -31,7 +31,15 @@ public class SimpleRowFilter implements RowFilter<List<Map<String, Object>>> {
         ROW_LOOP:
         for (Iterator<Map<String, Object>> it = input.iterator(); it.hasNext(); ){
             Map<String, Object> row = it.next();
+
+            boolean matchCriteria = true;
             for (FieldCriteria criteria : fieldCriterias){
+                if(!matchCriteria){
+                    break;
+                }
+                if(Objects.isNull(criteria.getSecondOperand())){
+                    continue;
+                }
                 String fieldName = criteria.getFieldName();
 
                 if(Objects.isNull(row.get(fieldName))){
@@ -43,27 +51,27 @@ public class SimpleRowFilter implements RowFilter<List<Map<String, Object>>> {
                     case TIMESTAMP -> {
                         LocalDateTime firstOperand = (LocalDateTime) row.get(fieldName);
                         if(!criteria.getOperator().getOperatorFunction().test(firstOperand, criteria.getSecondOperand())){
-                            it.remove();
-                            continue ROW_LOOP;
+                            matchCriteria&=false;
                         }
                     }
                     case STRING -> {
                         String firstOperand = (String) row.get(fieldName);
                         if(!criteria.getOperator().getOperatorFunction().test(firstOperand, criteria.getSecondOperand())){
-                            it.remove();
-                            continue ROW_LOOP;
+                            matchCriteria&=false;
                         }
                     }
                     case DECIMAL -> {
                         Double firstOperand = (Double) row.get(fieldName);
                         if(!criteria.getOperator().getOperatorFunction().test(firstOperand, criteria.getSecondOperand())){
-                            it.remove();
-                            continue ROW_LOOP;
+                            matchCriteria&=false;
                         }}
                     default -> {
                         throw new IllegalFileFormatException("TYPE not found", ErrorCode.DATA_TYPE_NOT_FOUND);
                     }
                 }
+            }
+            if(!matchCriteria){
+                it.remove();
             }
         }
         return input;
